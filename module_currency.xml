@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_currency" default="compile.module.currency">
+  <dirname property="module.currency.basedir" file="${ant.file.module_currency}"/>
+  
+  <property name="module.jdk.home.currency" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.currency" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.currency" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.currency" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+  
+  <property name="currency.output.dir" value="${module.currency.basedir}/../out/production/Currency"/>
+  <property name="currency.testoutput.dir" value="${module.currency.basedir}/../out/test/Currency"/>
+  
+  <path id="currency.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="currency.module.production.classpath">
+    <path refid="${module.jdk.classpath.currency}"/>
+  </path>
+  
+  <path id="currency.runtime.production.module.classpath">
+    <pathelement location="${currency.output.dir}"/>
+  </path>
+  
+  <path id="currency.module.classpath">
+    <path refid="${module.jdk.classpath.currency}"/>
+    <pathelement location="${currency.output.dir}"/>
+  </path>
+  
+  <path id="currency.runtime.module.classpath">
+    <pathelement location="${currency.testoutput.dir}"/>
+    <pathelement location="${currency.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.currency">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.currency">
+    <patternset refid="excluded.from.module.currency"/>
+  </patternset>
+  
+  <path id="currency.module.sourcepath">
+    <dirset dir="${module.currency.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.currency" depends="compile.module.currency.production,compile.module.currency.tests" description="Compile module Currency"/>
+  
+  <target name="compile.module.currency.production" depends="register.custom.compilers" description="Compile module Currency; production classes">
+    <mkdir dir="${currency.output.dir}"/>
+    <javac2 destdir="${currency.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.currency}/javac">
+      <compilerarg line="${compiler.args.currency}"/>
+      <bootclasspath refid="currency.module.bootclasspath"/>
+      <classpath refid="currency.module.production.classpath"/>
+      <src refid="currency.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.currency"/>
+    </javac2>
+    
+    <copy todir="${currency.output.dir}">
+      <fileset dir="${module.currency.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.currency.tests" depends="register.custom.compilers,compile.module.currency.production" description="compile module Currency; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.currency" description="cleanup module">
+    <delete dir="${currency.output.dir}"/>
+    <delete dir="${currency.testoutput.dir}"/>
+  </target>
+</project>
